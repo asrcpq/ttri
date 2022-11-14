@@ -1,4 +1,4 @@
-reorganize
+add grayscale
 
 todo:
 grayscale sampler

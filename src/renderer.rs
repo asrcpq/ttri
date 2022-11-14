@@ -79,7 +79,7 @@ impl Renderer {
 			future: None,
 			_debug_callback: None,
 		};
-		result.upload_tex(Teximg::filled([1, 1], [0; 4]), -2);
+		result.upload_tex(Teximg::luma_filled([1, 1], [0; 4]), -2);
 		result
 	}
 

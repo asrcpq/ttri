@@ -3,7 +3,7 @@ use vulkano::descriptor_set::{PersistentDescriptorSet, WriteDescriptorSet};
 use vulkano::format::Format;
 use vulkano::image::view::{ImageView, ImageViewCreateInfo, ImageViewType};
 use vulkano::image::{ImageDimensions, ImmutableImage, MipmapsCount};
-use vulkano::sampler::{Sampler, SamplerCreateInfo};
+use vulkano::sampler::{ComponentMapping, Sampler, SamplerCreateInfo};
 
 use crate::helper::*;
 use crate::teximg::Teximg;
@@ -47,7 +47,22 @@ fn create_image_view(
 		height: image.dim[1],
 		array_layers: 1,
 	};
-	let format = Format::R8G8B8A8_SRGB;
+	let format = if image.color {
+		Format::R8G8B8A8_SRGB
+	} else {
+		Format::R8_UNORM
+	};
+	let component_mapping = if image.color {
+		ComponentMapping::default()
+	} else {
+		use vulkano::sampler::ComponentSwizzle as Sw;
+		ComponentMapping {
+			r: Sw::One,
+			g: Sw::One,
+			b: Sw::One,
+			a: Sw::Red,
+		}
+	};
 	let image = ImmutableImage::from_iter(
 		&memalloc,
 		image.data.into_iter(),
@@ -61,6 +76,7 @@ fn create_image_view(
 		image.clone(),
 		ImageViewCreateInfo {
 			view_type: ImageViewType::Dim2d,
+			component_mapping,
 			..ImageViewCreateInfo::from_image(&image)
 		},
 	)
