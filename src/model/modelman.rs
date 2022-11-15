@@ -91,7 +91,7 @@ impl Modelman {
 			}
 		}
 		if invalid > 0 {
-			eprintln!("ERROR: Skipped {} invalid faces", invalid);
+			eprintln!("ERROR: skipped {} invalid faces", invalid);
 		}
 		let model = CompiledModel {
 			visible: true,
