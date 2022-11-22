@@ -14,6 +14,10 @@ mod vertex;
 pub type V2 = nalgebra::Vector2<f32>;
 pub type M4 = nalgebra::Matrix4<f32>;
 
+pub mod reexport {
+	pub use winit;
+}
+
 pub fn printnow(s: &str) {
 	let dt = std::time::SystemTime::now()
 		.duration_since(std::time::UNIX_EPOCH)
