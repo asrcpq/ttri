@@ -1,6 +1,5 @@
 use winit::event::{ElementState, MouseButton, WindowEvent};
-
-type V2 = nalgebra::Vector2<f32>;
+use crate::V2;
 
 // 2d camera controller
 pub struct Camcon {
@@ -28,6 +27,14 @@ impl Camcon {
 
 			control_state: Default::default(),
 		}
+	}
+
+	// viewport include the box
+	pub fn fit_inner(&mut self, bbox: [V2; 2]) {
+		self.world_center = (bbox[0] + bbox[1]) / 2.0;
+		let zoom1 = self.screen_r[0] / (bbox[1][0] - bbox[0][0]);
+		let zoom2 = self.screen_r[0] / (bbox[1][0] - bbox[0][0]);
+		self.zoom = zoom1.min(zoom2);
 	}
 
 	pub fn move_view(&mut self, ds: V2) {
