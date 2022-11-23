@@ -30,10 +30,10 @@ impl Camcon {
 	}
 
 	// viewport include the box
-	pub fn fit_inner(&mut self, bbox: [V2; 2]) {
-		self.world_center = (bbox[0] + bbox[1]) / 2.0;
-		let zoom1 = self.screen_r[0] / (bbox[1][0] - bbox[0][0]);
-		let zoom2 = self.screen_r[0] / (bbox[1][0] - bbox[0][0]);
+	pub fn fit_inner(&mut self, lu: V2, rd: V2) {
+		self.world_center = (lu + rd) / 2.0;
+		let zoom1 = self.screen_r[0] / (rd[0] - lu[0]);
+		let zoom2 = self.screen_r[1] / (rd[1] - lu[1]);
 		self.zoom = zoom1.min(zoom2);
 	}
 
