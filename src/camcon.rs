@@ -1,4 +1,4 @@
-use winit::event::{ElementState, MouseButton, WindowEvent};
+use winit::event::{ElementState, MouseButton, WindowEvent, VirtualKeyCode, KeyboardInput};
 use crate::V2;
 
 // 2d camera controller
@@ -89,6 +89,20 @@ impl Camcon {
 					result = true;
 				}
 				self.control_state.prev_cursor_pos = Some(pos);
+			}
+			WindowEvent::KeyboardInput {
+				input: KeyboardInput {
+					state: ElementState::Pressed,
+					virtual_keycode: Some(vkc),
+					..
+				},
+				..
+			} => {
+				match vkc {
+					VirtualKeyCode::I => self.zoom(1.2),
+					VirtualKeyCode::O => self.zoom(1.0 / 1.2),
+					_ => {},
+				}
 			}
 			WindowEvent::MouseInput { state, button, .. } => {
 				if *button == MouseButton::Middle {
