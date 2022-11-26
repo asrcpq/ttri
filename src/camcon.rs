@@ -101,6 +101,10 @@ impl Camcon {
 				match vkc {
 					VirtualKeyCode::I => self.zoom(1.2),
 					VirtualKeyCode::O => self.zoom(1.0 / 1.2),
+					VirtualKeyCode::J => self.move_view(V2::new(0.0, -20.0)),
+					VirtualKeyCode::K => self.move_view(V2::new(0.0, 20.0)),
+					VirtualKeyCode::H => self.move_view(V2::new(20.0, 0.0)),
+					VirtualKeyCode::L => self.move_view(V2::new(-20.0, 0.0)),
 					_ => {},
 				}
 			}
