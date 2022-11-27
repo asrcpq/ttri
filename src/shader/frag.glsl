@@ -15,6 +15,5 @@ void main() {
 	} else {
 		o_color = vec4(0.0, 0.0, 0.0, 1.0);
 	}
-	// TODO: are we blending on srgb?
 	o_color.xyz = f_color.w * f_color.xyz + (1.0 - f_color.w) * o_color.xyz;
 }
