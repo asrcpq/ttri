@@ -1,3 +1,4 @@
+use std::path::Path;
 use image::ImageBuffer;
 
 pub struct Teximg {
@@ -53,7 +54,7 @@ impl Teximg {
 		Self::from_rgba(image)
 	}
 
-	pub fn load(path: &str, color: bool) -> Self {
+	pub fn load<P: AsRef<Path>>(path: P, color: bool) -> Self {
 		if color {
 			Self::from_rgba(image::open(path).unwrap().into_rgba8())
 		} else {
@@ -61,7 +62,7 @@ impl Teximg {
 		}
 	}
 
-	pub fn save(&self, path: &str) {
+	pub fn save<P: AsRef<Path>>(&self, path: P) {
 		if self.color {
 			RgbaImage::from_vec(self.dim[0], self.dim[1], self.data.clone())
 				.unwrap()
