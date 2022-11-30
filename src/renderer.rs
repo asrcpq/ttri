@@ -91,7 +91,7 @@ impl Renderer {
 		self
 	}
 
-	fn get_window(&self) -> &Window {
+	pub fn get_window(&self) -> &Window {
 		self.base
 			.surface
 			.object()
