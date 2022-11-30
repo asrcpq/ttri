@@ -14,8 +14,9 @@ type V2 = rust_stddep::nalgebra::Vector2<f32>;
 fn main() {
 	let el = EventLoopBuilder::<()>::with_user_event().build();
 	let mut rdr = Renderer::new(&el);
-	let tex1 = Teximg::luma_filled([1024; 2], [128; 4]);
 	let tex2 = Teximg::preset_rgb565();
+	let tex1 = Teximg::load("/tmp/t/gradient.png", true);
+	let tex2 = Teximg::load("/tmp/t/gradient2.png", true);
 	let mut camcon = Camcon::new([640, 480]);
 	camcon.fit_inner(V2::new(0.0, 0.0), V2::new(2.0, 2.0));
 	let mut _mh = Vec::new();
@@ -72,7 +73,7 @@ fn main() {
 				},
 				Face {
 					vid: [6, 4, 5],
-					uvid: [0, 1, 2],
+					uvid: [3, 1, 2],
 					layer: 1,
 					color: [0f32; 4],
 				},

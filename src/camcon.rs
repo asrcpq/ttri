@@ -69,6 +69,7 @@ impl Camcon {
 		)
 	}
 
+	// true = processed
 	pub fn process_event(&mut self, event: &WindowEvent) -> bool {
 		let mut result = false;
 		match event {
@@ -98,6 +99,7 @@ impl Camcon {
 				},
 				..
 			} => {
+				result = true;
 				match vkc {
 					VirtualKeyCode::I => self.zoom(1.2),
 					VirtualKeyCode::O => self.zoom(1.0 / 1.2),
@@ -105,7 +107,7 @@ impl Camcon {
 					VirtualKeyCode::K => self.move_view(V2::new(0.0, 20.0)),
 					VirtualKeyCode::H => self.move_view(V2::new(20.0, 0.0)),
 					VirtualKeyCode::L => self.move_view(V2::new(-20.0, 0.0)),
-					_ => {},
+					_ => result = false,
 				}
 			}
 			WindowEvent::MouseInput { state, button, .. } => {
