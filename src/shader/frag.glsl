@@ -11,7 +11,7 @@ layout(set = 1, binding = 0) uniform sampler2D tex[];
 
 void main() {
 	if (f_tex_layer >= 0) {
-		o_color = texture(tex[f_tex_layer], f_tex_coord);
+		o_color = texture(nonuniformEXT(tex[f_tex_layer]), f_tex_coord);
 	} else {
 		o_color = vec4(0.0, 0.0, 0.0, 1.0);
 	}
