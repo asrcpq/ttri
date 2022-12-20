@@ -20,12 +20,12 @@ use vulkano::pipeline::layout::{PipelineLayout, PipelineLayoutCreateInfo};
 use vulkano::pipeline::GraphicsPipeline;
 use vulkano::pipeline::{Pipeline, PipelineBindPoint};
 use vulkano::render_pass::{Framebuffer, FramebufferCreateInfo, Subpass};
+use vulkano::shader::ShaderModule;
 
 use crate::base::Base;
 use crate::camera::Camera;
 use crate::helper::*;
 use crate::model::modelman::Modelman;
-use crate::shader;
 use crate::texman::Texman;
 use crate::vertex::VertexTex;
 
@@ -185,8 +185,13 @@ pub fn get_pipeline_tex(
 	device: VkwDevice,
 	tex_len: u32,
 ) -> VkwPipeline {
-	let vs = shader::vs::load(device.clone()).unwrap();
-	let fs = shader::fs::load(device.clone()).unwrap();
+	let (vs, fs) = unsafe {
+		let vs = include_bytes!("shader/vert.spv");
+		let vs = ShaderModule::from_bytes(device.clone(), vs).unwrap();
+		let fs = include_bytes!("shader/frag.spv");
+		let fs = ShaderModule::from_bytes(device.clone(), fs).unwrap();
+		(vs, fs)
+	};
 	let mut layout_create_infos: Vec<_> =
 		DescriptorSetLayoutCreateInfo::from_requirements(
 			vs.entry_point("main")

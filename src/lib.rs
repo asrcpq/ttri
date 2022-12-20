@@ -7,7 +7,6 @@ mod base;
 mod camera;
 mod helper;
 mod rmod;
-mod shader;
 mod texman;
 mod vertex;
 

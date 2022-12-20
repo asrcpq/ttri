@@ -16,7 +16,6 @@ fn main() {
 	let mut rdr = Renderer::new(&el);
 	let tex2 = Teximg::preset_rgb565();
 	let tex1 = Teximg::load("/tmp/t/gradient.png", true);
-	let tex2 = Teximg::load("/tmp/t/gradient2.png", true);
 	let mut camcon = Camcon::new([640, 480]);
 	camcon.fit_inner(V2::new(0.0, 0.0), V2::new(2.0, 2.0));
 	let mut _mh = Vec::new();
