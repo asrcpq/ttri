@@ -14,13 +14,11 @@ type V2 = rust_stddep::nalgebra::Vector2<f32>;
 fn main() {
 	let el = EventLoopBuilder::<()>::with_user_event().build();
 	let mut rdr = Renderer::new(&el);
-	let tex2 = Teximg::preset_rgb565();
-	let tex1 = Teximg::load("/tmp/t/gradient.png", true);
+	let tex = Teximg::preset_rgb565();
 	let mut camcon = Camcon::new([640, 480]);
 	camcon.fit_inner(V2::new(0.0, 0.0), V2::new(2.0, 2.0));
 	let mut _mh = Vec::new();
-	rdr.upload_tex(tex1, 0);
-	rdr.upload_tex(tex2, 1);
+	rdr.upload_tex(tex, 0);
 	el.run(move |event, _, ctrl| match event {
 		Event::WindowEvent { event: e, .. } => {
 			camcon.process_event(&e);
@@ -67,13 +65,13 @@ fn main() {
 				Face {
 					vid: [3, 4, 5],
 					uvid: [0, 1, 2],
-					layer: 1,
+					layer: 0,
 					color: [0f32; 4],
 				},
 				Face {
 					vid: [6, 4, 5],
 					uvid: [3, 1, 2],
-					layer: 1,
+					layer: 0,
 					color: [0f32; 4],
 				},
 			];
