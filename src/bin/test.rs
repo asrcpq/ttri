@@ -3,7 +3,7 @@ use ttri::reexport::winit::{
 	event::{Event, WindowEvent},
 };
 
-use ttri::camcon::Camcon;
+use ttri::cam::camcon2::Camcon;
 use ttri::teximg::Teximg;
 use ttri::renderer::Renderer;
 use ttri_model::cmodel::{Model, Face};
