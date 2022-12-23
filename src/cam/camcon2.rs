@@ -1,7 +1,6 @@
 use winit::event::{ElementState, MouseButton, WindowEvent, VirtualKeyCode, KeyboardInput};
 
 use crate::{V2, M4};
-use crate::camera::Camera;
 
 // 2d camera controller
 pub struct Camcon {
@@ -57,22 +56,18 @@ impl Camcon {
 		self.zoom *= k;
 	}
 
-	pub fn get_camera(&self) -> Camera {
+	pub fn get_camera(&self) -> M4 {
 		let [cx, cy]: [f32; 2] = self.world_center.into();
 		let [rx, ry]: [f32; 2] =
 			[self.screen_r[0] / self.zoom, self.screen_r[1] / self.zoom];
-		let proj = M4::new_orthographic(
+		M4::new_orthographic(
 			cx - rx,
 			cx + rx,
 			cy - ry,
 			cy + ry,
 			1.0,
 			-1.0,
-		);
-		Camera {
-			view: M4::identity().into(),
-			proj: proj.into(),
-		}
+		)
 	}
 
 	// true = processed
