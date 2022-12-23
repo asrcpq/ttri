@@ -44,7 +44,7 @@ impl Camcon {
 	}
 
 	pub fn move_view(&mut self, mut dx: V2) {
-		dx *= 0.01;
+		dx *= 0.03;
 		if let Some(inv) = self.transform.try_inverse() {
 			let x_view: V4 = inv * V4::new(1.0, 0.0, 0.0, 0.0);
 			let y_view: V4 = inv * V4::new(0.0, 1.0, 0.0, 0.0);
@@ -54,7 +54,7 @@ impl Camcon {
 	}
 
 	pub fn rotate_view(&mut self, mut dx: V2) {
-		dx *= 0.01;
+		dx *= 0.003;
 		let rot = M4::from_euler_angles(-dx[1], dx[0], 0f32);
 		self.transform = rot * self.transform;
 	}
