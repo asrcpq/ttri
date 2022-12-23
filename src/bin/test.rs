@@ -14,7 +14,7 @@ fn main() {
 	let el = EventLoopBuilder::<()>::with_user_event().build();
 	let mut rdr = Renderer::new(&el);
 	let tex = Teximg::preset_rgb565();
-	let mut camcon = Camcon::new(V3::new(1.0, 1.0, -10.0));
+	let mut camcon = Camcon::new(V3::new(1.0, 1.0, 1.0));
 	let mut _mh = Vec::new();
 	rdr.upload_tex(tex, 0);
 	el.run(move |event, _, ctrl| match event {

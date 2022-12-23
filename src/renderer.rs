@@ -118,8 +118,9 @@ impl Renderer {
 	}
 
 	pub fn render_p(&mut self, view: M4) {
+		let [w, h]: [u32; 2] = self.get_window().inner_size().into();
 		let proj = nalgebra::geometry::Perspective3::new(
-			1.0,
+			w as f32 / h as f32,
 			1.0,
 			0.1,
 			1000.0,
