@@ -74,7 +74,7 @@ fn main() {
 			];
 			let model = Model {vs, uvs, faces};
 			_mh = vec![rdr.insert_model(&model)];
-			let cam = dbg!(camcon.get_camera());
+			let cam = camcon.get_camera();
 			rdr.render_p(cam);
 			*ctrl = ControlFlow::Wait;
 		}

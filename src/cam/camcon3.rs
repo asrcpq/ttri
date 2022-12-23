@@ -1,13 +1,11 @@
-use rust_stddep::nalgebra_glm;
 use winit::event::{ElementState, MouseButton, WindowEvent, VirtualKeyCode, KeyboardInput};
 
-use crate::{V2, V3, M4};
+use crate::{V2, V3, V4, M4};
 
 // 3d camera controller
 pub struct Camcon {
 	pos: V3,
-	look: V3, // relative, norm
-	up: V3, // relative, norm
+	transform: M4,
 
 	control_state: ControlState,
 }
@@ -22,36 +20,30 @@ impl Camcon {
 	pub fn new(pos: V3) -> Self {
 		Self {
 			pos,
-			look: V3::new(0.0, 0.0, 1.0),
-			up: V3::new(0.0, 1.0, 0.0),
+			transform: M4::identity(),
 
 			control_state: Default::default(),
 		}
 	}
 
 	pub fn get_camera(&self) -> M4 {
-		nalgebra_glm::look_at(
-			&self.pos,
-			&(self.pos + self.look),
-			&self.up,
-		)
-	}
-
-	pub fn right(&mut self, dist: f32) {
-		let right = self.look.cross(&self.up);
-		self.pos += dist * right;
+		self.transform.prepend_translation(&self.pos)
 	}
 
 	pub fn go(&mut self, dist: f32) {
-		self.pos += dist * self.look;
+		if let Some(inv) = self.transform.try_inverse() {
+			let z_view: V4 = inv * V4::new(0.0, 0.0, 1.0, 0.0);
+			if let Some(x) = V3::from_homogeneous(z_view) { self.pos += x * dist; }
+			else {
+				eprintln!("bad {}", dist);
+			}
+		}
 	}
 
-	pub fn rotate_view(&mut self, dx: V2) {
-		let k = 0.01;
-
-		let right = self.look.cross(&self.up);
-		self.look += dx[0] * k * right;
-		self.look = self.look.normalize();
+	pub fn rotate_view(&mut self, mut dx: V2) {
+		dx *= 0.01;
+		let rot = M4::from_euler_angles(-dx[1], dx[0], 0f32);
+		self.transform = rot * self.transform;
 	}
 
 	pub fn process_event(&mut self, event: &WindowEvent) -> bool {
