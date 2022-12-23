@@ -1,3 +1,4 @@
+use rust_stddep::nalgebra_glm;
 use winit::event::{ElementState, MouseButton, WindowEvent, VirtualKeyCode, KeyboardInput};
 
 use crate::{V2, V3, M4};
@@ -29,7 +30,7 @@ impl Camcon {
 	}
 
 	pub fn get_camera(&self) -> M4 {
-		rust_stddep::nalgebra_glm::look_at(
+		nalgebra_glm::look_at(
 			&self.pos,
 			&(self.pos + self.look),
 			&self.up,
@@ -46,6 +47,11 @@ impl Camcon {
 	}
 
 	pub fn rotate_view(&mut self, dx: V2) {
+		let k = 0.01;
+
+		let right = self.look.cross(&self.up);
+		self.look += dx[0] * k * right;
+		self.look = self.look.normalize();
 	}
 
 	pub fn process_event(&mut self, event: &WindowEvent) -> bool {

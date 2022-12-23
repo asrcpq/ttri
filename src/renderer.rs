@@ -1,3 +1,4 @@
+use rust_stddep::nalgebra;
 use std::sync::Arc;
 use vulkano::command_buffer::{AutoCommandBufferBuilder, CommandBufferUsage};
 use vulkano::image::ImageAccess;
@@ -116,14 +117,36 @@ impl Renderer {
 		self.rmod.modelman.insert(model, &self.rmod.texman.mapper)
 	}
 
-	pub fn render2(&mut self) {
-		let [w, h]: [u32; 2] = self.get_window().inner_size().into();
-		let [w, h] = [w as f32, h as f32];
-		let camera = M4::new_orthographic(0., w, 0., h, 1.0, -1.0);
+	pub fn render_p(&mut self, view: M4) {
+		let proj = nalgebra::geometry::Perspective3::new(
+			1.0,
+			1.0,
+			0.1,
+			100.0,
+		);
+		let camera = Camera {
+			view: view.into(),
+			proj: proj.into_inner().into(),
+		};
 		self.render(camera);
 	}
 
-	pub fn render(&mut self, camera: M4) {
+	pub fn render_s(&mut self) {
+		let [w, h]: [u32; 2] = self.get_window().inner_size().into();
+		let [w, h] = [w as f32, h as f32];
+		let camera = M4::new_orthographic(0., w, 0., h, 1.0, -1.0);
+		self.render_o(camera);
+	}
+
+	pub fn render_o(&mut self, proj: M4) {
+		let camera = Camera {
+			view: M4::identity().into(),
+			proj: proj.into(),
+		};
+		self.render(camera);
+	}
+
+	pub fn render(&mut self, camera: Camera) {
 		if self.dirty {
 			self.create_swapchain();
 			self.dirty = false;
@@ -152,9 +175,7 @@ impl Renderer {
 		self.rmod.build_command(
 			&mut builder,
 			image_num as usize,
-			Camera {
-				data: camera.into(),
-			},
+			camera,
 			self.viewport.clone(),
 		);
 		let command_buffer = Box::new(builder.build().unwrap());
