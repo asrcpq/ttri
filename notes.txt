@@ -1,10 +1,1 @@
-remove vulkano_shader dependency,
-greatly reduce compile time and binary size
-
-as a simple gui library, users should not have access to
-(and not wasting their compilation time on)
-the shader tool compilation.
-
-however, the binary spv is not commited to the source code,
-but handled by other downloader,
-I am still considering mothods for other users to fetch those compiled shaders
+implement camcon3, preparing for 3d model
