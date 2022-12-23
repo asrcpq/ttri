@@ -3,20 +3,18 @@ use ttri::reexport::winit::{
 	event::{Event, WindowEvent},
 };
 
-use ttri::cam::camcon2::Camcon;
+use ttri::cam::camcon3::Camcon;
 use ttri::teximg::Teximg;
 use ttri::renderer::Renderer;
 use ttri_model::cmodel::{Model, Face};
 use ttri_model::draw::v2p4;
-
-type V2 = rust_stddep::nalgebra::Vector2<f32>;
+use ttri::{V2, V3};
 
 fn main() {
 	let el = EventLoopBuilder::<()>::with_user_event().build();
 	let mut rdr = Renderer::new(&el);
 	let tex = Teximg::preset_rgb565();
-	let mut camcon = Camcon::new([640, 480]);
-	camcon.fit_inner(V2::new(0.0, 0.0), V2::new(2.0, 2.0));
+	let mut camcon = Camcon::new(V3::new(1.0, 1.0, 1.0));
 	let mut _mh = Vec::new();
 	rdr.upload_tex(tex, 0);
 	el.run(move |event, _, ctrl| match event {
@@ -28,20 +26,19 @@ fn main() {
 				}
 				WindowEvent::Resized(_) => {
 					rdr.damage();
-					camcon.resize(rdr.get_size());
 				}
 				_ => {}
 			}
 		}
 		Event::MainEventsCleared => {
 			let vs = vec![
-				v2p4(V2::new(0.0, 0.0), 0.0),
-				v2p4(V2::new(0.0, 1.0), 0.0),
-				v2p4(V2::new(1.0, 0.0), 0.0),
-				v2p4(V2::new(1.0, 1.0), 0.0),
-				v2p4(V2::new(1.0, 2.0), 0.0),
-				v2p4(V2::new(2.0, 1.0), 0.0),
-				v2p4(V2::new(2.0, 2.0), 0.0),
+				v2p4(V2::new(-10.0, -10.0), 1.0),
+				v2p4(V2::new(-10.0, 10.0), 0.0),
+				v2p4(V2::new(10.0, -10.0), 1.0),
+				v2p4(V2::new(10.0, 10.0), 0.0),
+				v2p4(V2::new(10.0, 20.0), 1.0),
+				v2p4(V2::new(20.0, 10.0), 0.0),
+				v2p4(V2::new(20.0, 20.0), 1.0),
 			];
 			let uvs = vec![
 				V2::new(0.0, 0.0).into(),
@@ -77,7 +74,9 @@ fn main() {
 			];
 			let model = Model {vs, uvs, faces};
 			_mh = vec![rdr.insert_model(&model)];
-			rdr.render(camcon.get_camera());
+			let cam = dbg!(camcon.get_camera());
+			// let cam = ttri::M4::identity();
+			rdr.render(cam);
 			*ctrl = ControlFlow::Wait;
 		}
 		_ => {},

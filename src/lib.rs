@@ -12,6 +12,7 @@ mod vertex;
 
 
 pub type V2 = rust_stddep::nalgebra::Vector2<f32>;
+pub type V3 = rust_stddep::nalgebra::Vector3<f32>;
 pub type M4 = rust_stddep::nalgebra::Matrix4<f32>;
 
 pub mod reexport {
