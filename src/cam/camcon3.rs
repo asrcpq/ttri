@@ -5,7 +5,9 @@ use crate::{V2, V3, V4, M4};
 // 3d camera controller
 pub struct Camcon {
 	pos: V3,
-	transform: M4,
+
+	yaw: f32,
+	pitch: f32,
 
 	control_state: ControlState,
 }
@@ -22,19 +24,24 @@ impl Camcon {
 	pub fn new(pos: V3) -> Self {
 		Self {
 			pos,
-			transform: M4::from_partial_diagonal(&[1.0, 1.0, -1.0, 1.0]),
+			yaw: 0.0,
+			pitch: 0.0,
 
 			control_state: Default::default(),
 		}
 	}
 
 	pub fn get_camera(&self) -> M4 {
-		self.transform.prepend_translation(&self.pos)
+		self.get_trans().prepend_translation(&self.pos)
+	}
+
+	pub fn get_trans(&self) -> M4 {
+		M4::from_euler_angles(-self.pitch, self.yaw, 0f32)
 	}
 
 	pub fn go(&mut self, mut dist: f32) {
 		dist *= -0.1;
-		if let Some(inv) = self.transform.try_inverse() {
+		if let Some(inv) = self.get_trans().try_inverse() {
 			let z_view: V4 = inv * V4::new(0.0, 0.0, 1.0, 0.0);
 			if let Some(x) = V3::from_homogeneous(z_view) { self.pos += x * dist; }
 			else {
@@ -45,7 +52,7 @@ impl Camcon {
 
 	pub fn move_view(&mut self, mut dx: V2) {
 		dx *= 0.03;
-		if let Some(inv) = self.transform.try_inverse() {
+		if let Some(inv) = self.get_trans().try_inverse() {
 			let x_view: V4 = inv * V4::new(1.0, 0.0, 0.0, 0.0);
 			let y_view: V4 = inv * V4::new(0.0, 1.0, 0.0, 0.0);
 			if let Some(x) = V3::from_homogeneous(x_view) { self.pos += x * dx[0]; }
@@ -55,8 +62,8 @@ impl Camcon {
 
 	pub fn rotate_view(&mut self, mut dx: V2) {
 		dx *= 0.003;
-		let rot = M4::from_euler_angles(-dx[1], dx[0], 0f32);
-		self.transform = rot * self.transform;
+		self.yaw += dx[0];
+		self.pitch += dx[1];
 	}
 
 	pub fn process_event(&mut self, event: &WindowEvent) -> bool {
