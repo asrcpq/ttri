@@ -36,7 +36,8 @@ impl Camcon {
 	}
 
 	pub fn get_trans(&self) -> M4 {
-		M4::from_euler_angles(-self.pitch, self.yaw, 0f32)
+		M4::from_euler_angles(-self.pitch, 0f32, 0f32) *
+			M4::from_euler_angles(0f32, self.yaw, 0f32)
 	}
 
 	pub fn go(&mut self, mut dist: f32) {
