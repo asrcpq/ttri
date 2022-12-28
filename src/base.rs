@@ -1,3 +1,6 @@
+use rust_stddep::winit::dpi::{LogicalSize, Size};
+use rust_stddep::winit::event_loop::EventLoopWindowTarget;
+use rust_stddep::winit::window::{Window, WindowBuilder};
 use std::sync::Arc;
 use vulkano::command_buffer::allocator::StandardCommandBufferAllocator;
 use vulkano::descriptor_set::allocator::StandardDescriptorSetAllocator;
@@ -8,12 +11,9 @@ use vulkano::device::{
 use vulkano::image::ImageUsage;
 use vulkano::instance::{Instance, InstanceCreateInfo, InstanceExtensions};
 use vulkano::memory::allocator::StandardMemoryAllocator;
-use vulkano::swapchain::{PresentMode, Swapchain, SwapchainCreateInfo};
+use vulkano::swapchain::{
+	PresentMode, Swapchain, SwapchainCreateInfo, Surface, SurfaceCreationError};
 use vulkano::{Version, VulkanLibrary};
-use vulkano_win::VkSurfaceBuild;
-use winit::dpi::{LogicalSize, Size};
-use winit::event_loop::EventLoopWindowTarget;
-use winit::window::{Window, WindowBuilder};
 
 use crate::helper::*;
 
@@ -34,11 +34,57 @@ fn winit_size(size: [u32; 2]) -> Size {
 	Size::new(LogicalSize::new(size[0], size[1]))
 }
 
+pub fn required_extensions(library: &VulkanLibrary) -> InstanceExtensions {
+	let ideal = InstanceExtensions {
+		khr_surface: true,
+		khr_xlib_surface: true,
+		khr_xcb_surface: true,
+		khr_wayland_surface: true,
+		khr_get_physical_device_properties2: true,
+		khr_get_surface_capabilities2: true,
+		..InstanceExtensions::empty()
+	};
+
+	library.supported_extensions().intersection(&ideal)
+}
+
+unsafe fn winit_to_surface(
+	instance: Arc<Instance>,
+	window: Arc<Window>,
+) -> Result<Arc<Surface>, SurfaceCreationError> {
+	use rust_stddep::winit::platform::unix::WindowExtUnix;
+
+	match (window.wayland_display(), window.wayland_surface()) {
+		(Some(display), Some(surface)) => {
+			Surface::from_wayland(instance, display, surface, Some(window))
+		}
+		_ => {
+			// No wayland display found, check if we can use xlib.
+			// If not, we use xcb.
+			if instance.enabled_extensions().khr_xlib_surface {
+				Surface::from_xlib(
+					instance,
+					window.xlib_display().unwrap(),
+					window.xlib_window().unwrap() as _,
+					Some(window),
+				)
+			} else {
+				Surface::from_xcb(
+					instance,
+					window.xcb_connection().unwrap(),
+					window.xlib_window().unwrap() as _,
+					Some(window),
+				)
+			}
+		}
+	}
+}
+
 impl Base {
 	pub fn new<E>(el: &EventLoopWindowTarget<E>) -> Self {
 		let library = VulkanLibrary::new().unwrap();
 		assert!(library.api_version() >= Version::V1_2);
-		let required_extensions = vulkano_win::required_extensions(&library);
+		let required_extensions = required_extensions(&library);
 		let extensions = InstanceExtensions {
 			ext_debug_utils: true,
 			..InstanceExtensions::empty()
@@ -54,11 +100,15 @@ impl Base {
 			},
 		)
 		.unwrap();
-		let surface = WindowBuilder::new()
+		let window = WindowBuilder::new()
 			.with_inner_size(winit_size([800, 600]))
 			//.with_resizable(false)
-			.build_vk_surface(el, instance.clone())
+			.build(el)
 			.unwrap();
+		let window = Arc::new(window);
+		let surface = unsafe {
+			winit_to_surface(instance.clone(), window).unwrap()
+		};
 
 		let (physical_device, device, queue) =
 			get_device_and_queue(&instance, surface.clone());
@@ -136,9 +186,9 @@ pub fn get_device_and_queue(
 		.expect("No suitable physical device found");
 
 	// println!(
-	// 	"Using device: {} (type: {:?})",
-	// 	physical_device.properties().device_name,
-	// 	physical_device.properties().device_type,
+	//	"Using device: {} (type: {:?})",
+	//	physical_device.properties().device_name,
+	//	physical_device.properties().device_type,
 	// );
 
 	let (device, mut queues) = Device::new(

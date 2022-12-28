@@ -5,11 +5,8 @@ edition = "2021"
 
 [dependencies]
 vulkano = "0.32"
-vulkano-win = "0.32"
-winit = "0.27"
-
 bytemuck = "1.12"
 image = "0.24"
 
 ttri_model = {path = "../ttri_model"}
-rust_stddep = {path = "../rust_stddep", features = ["nalgebra"]}
+rust_stddep = {path = "../rust_stddep", features = ["nalgebra", "winit"]}

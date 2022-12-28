@@ -1,1 +1,1 @@
-fix apply order bug
+now can be built without pkg-config and libfontconfig-dev

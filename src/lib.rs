@@ -17,5 +17,5 @@ pub type V4 = rust_stddep::nalgebra::Vector4<f32>;
 pub type M4 = rust_stddep::nalgebra::Matrix4<f32>;
 
 pub mod reexport {
-	pub use winit;
+	pub use rust_stddep::winit;
 }

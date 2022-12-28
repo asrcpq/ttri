@@ -1,4 +1,6 @@
 use rust_stddep::nalgebra;
+use rust_stddep::winit::event_loop::EventLoopWindowTarget;
+use rust_stddep::winit::window::Window;
 use std::sync::Arc;
 use vulkano::command_buffer::{AutoCommandBufferBuilder, CommandBufferUsage};
 use vulkano::image::ImageAccess;
@@ -12,8 +14,6 @@ use vulkano::swapchain::{
 	self, AcquireError, SwapchainCreateInfo, SwapchainCreationError,
 };
 use vulkano::sync::{self, GpuFuture};
-use winit::event_loop::EventLoopWindowTarget;
-use winit::window::Window;
 
 use crate::base::Base;
 use crate::camera::Camera;

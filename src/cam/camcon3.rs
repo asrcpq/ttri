@@ -1,4 +1,4 @@
-use winit::event::{ElementState, MouseButton, WindowEvent};
+use rust_stddep::winit::event::{ElementState, MouseButton, WindowEvent};
 
 use crate::{V2, V3, V4, M4};
 
